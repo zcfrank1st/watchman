@@ -37,10 +37,10 @@ publishing {
     repositories {
         maven {
             credentials {
-                username 'admin'
-                password 'admin123'
+                username ''
+                password ''
             }
-            url "http://nexus.djdev.com/nexus/content/repositories/releases"
+            url ""
         }
     }
 }
