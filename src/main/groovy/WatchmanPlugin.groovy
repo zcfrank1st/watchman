@@ -47,39 +47,8 @@ class WatchmanPlugin implements Plugin<Project> {
                     ajInpath = project.configurations.findByName(namingConventions.getAspectInpathConfigurationName(projectSourceSet))
                 }
 
-                //add aop file init and aop file delete
-                project.task('generateAopFile') << {
-                    def aopFile = new File("${project.rootDir}/src/main/java/GlobalAspectj.java")
-                    aopFile.createNewFile()
-                    aopFile.write("""
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
-
-/**
- * Created by zcfrank1st on 21/12/2016.
- */
-@Aspect
-public class GlobalAspectj {
-
-    @Pointcut(value = "execution(* com.chaos.aspectj.demo.IDemo.hello(..))")
-    public void DemoPointCut() {}
-
-    @Around("DemoPointCut()")
-    public void around(ProceedingJoinPoint point) throws Throwable {
-        System.out.println("demo demo");
-        point.proceed();
-    }
-}
-""")
-                }
-
-                project.task('removeAOPFile') << {
-                    def aopFile = new File("${project.rootDir}/src/main/java/GlobalAspectj.java")
-                    aopFile.delete()
-                }
-
+                project.tasks.create(name: 'generateAopFile', type: AopGen)
+                project.tasks.create(name: 'removeAOPFile', type: AopClear)
 
                 project.tasks[aspectTaskName].setDependsOn(project.tasks[javaTaskName].dependsOn)
                 project.tasks[aspectTaskName].dependsOn(project.tasks[aspectTaskName].aspectpath)
@@ -87,8 +56,8 @@ public class GlobalAspectj {
                 project.tasks[javaTaskName].deleteAllActions()
                 project.tasks[javaTaskName].dependsOn(project.tasks[aspectTaskName])
 
-                project.task('compileAspect').dependsOn(project.task('generateAopFile'))
-                project.task('build').finalizedBy(project.task('removeAOPFile'))
+                project.tasks['compileAspect'].dependsOn(project.tasks['generateAopFile'])
+                project.tasks['build'].finalizedBy(project.tasks['removeAOPFile'])
             }
         }
     }
