@@ -22,7 +22,7 @@ import org.aspectj.lang.annotation.Pointcut;
 @Aspect
 public class GlobalAspectj {
 
-    @Pointcut(value = "execution(* com.chaos.aspectj.demo.IDemo.hello(..))")
+    @Pointcut(value = "execution(* android.app.Activity.*(..))")
     public void DemoPointCut() {}
 
     @Around("DemoPointCut()")
